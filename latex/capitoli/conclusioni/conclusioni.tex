@@ -1,0 +1,96 @@
+\chapter{Conclusioni}\label{ch:conclusioni}
+%Riassumere (fra una pagina) i tipi di modelli introdotti a complessità crescente con flat, cascade in output, poi cascade anche nel reservoir
+Nel corso della tesi sono stati presentati dei nuovi modelli di Reti Neurali Ricorsive per l'apprendimento supervisionato di trasduzioni strutturali su grafi. 
+I modelli proposti estendono le GraphESN attraverso un approccio costruttivo, innovativo nell'ambito del Reservoir Computing, che consente di costruire la rete progressivamente. Ereditando dalle GraphESN la capacità di apprendere trasduzioni strutturali generiche attraverso algoritmi di apprendimento efficienti, i modelli presentati sfruttano la strategia costruttiva per offrire soluzioni originali ad alcuni dei problemi aperti nell'ambito del Reservoir Computing. 
+
+% topologia automatica
+L'approccio costruttivo consente nei modelli proposti di determinare in maniera automatica (i.e.\ guidata dal task affrontato) il numero di unità che compongono la rete nel suo complesso e la sua topologia. Questa caratteristica permette di non dover fissare a priori la dimensione e la struttura della rete, in contrapposizione con quanto avviene per i modelli di Reservoir Computing esistenti, che fanno affidamento su reservoir prefissati. Tale vantaggio acquista rilievo se si considera che la dimensione del reservoir risulta essere un fattore estremamente importante per caratterizzare la complessità della rete. 
+La determinazione automatica del numero di unità ha quindi anche l'effetto di ridurre il costo computazionale necessario alla selezione del modello.
+
+% output-feedback
+Sfruttando la strategia costruttiva è stato inoltre realizzato un meccanismo stabile di output-feedback, usato per modificare le dinamiche dei reservoir. Nel corso del procedimento incrementale di costruzione della rete, infatti, i modelli costruttivi possono avvalersi delle informazioni già apprese in precedenza che, attraverso uno schema di connessioni fra le sotto-reti, sono state introdotte all'interno del processo di codifica dell'input.
+Anche in presenza di reservoir prefissati e non soggetti ad alcun tipo di adattamento, dunque, i modelli proposti risultano in grado di sfruttare, durante il procedimento di encoding, delle informazioni supervisionate, direttamente dipendenti dal task.
+Lo schema di output-feedback individua quindi una possibile strategia per affrontare uno dei problemi aperti caratteristici del Reservoir Computing: la presenza di reservoir fissati a priori e non adattivi, con dinamiche interne unicamente guidate dalla natura degli input e non legate anche al problema affrontato.
+
+% descrizione modelli
+Le soluzioni proposte sono state sviluppate secondo un processo incrementale, da cui sono derivati tre distinti modelli, ognuno in grado di generalizzare i precedenti. La strategia costruttiva è stata introdotta attraverso il modello GraphESN-CF, in grado di determinare automaticamente le dimensioni di una rete con topologia flat (i.e.\ con un unico livello di sotto-reti). Il modello GraphESN-FW ha esteso il precedente introducendo delle connessioni fra le sotto-reti, in modo da realizzare una rete di tipo Reservoir Computing con topologia multilayer non lineare. Con il modello GraphESN-FOF si è infine ulteriormente estesa la struttura delle connessioni fra le sotto-reti, sfruttando gli output-feedback per guidare il processo di encoding coerentemente con il task trattato.
+
+% efficienza douta alla scomposizione del problema
+I modelli realizzati si caratterizzano per una notevole flessibilità ed efficienza dal punto di vista computazionale. 
+L'opportunità di suddividere un task in sotto-problemi consente di ampliare la gamma di strategie utilizzabili nell'allenamento e permette di ricorrere a strumenti caratteristici dell'approccio costruttivo, come l'impiego di un pool. Oltre a questo, la decomposizione del problema offre la possibilità di impiegare sotto-reti di dimensioni contenute, specializzate a risolvere solo un sotto-task specifico, determinando così un notevole vantaggio computazionale nella realizzazione dell'allenamento della rete nel suo complesso. Anche guardando al solo ambito del Reservoir Computing, di per sé caratterizzato da oneri computazionali estremamente ridotti, i modelli realizzati permettono quindi di guadagnare in efficienza senza che questo comporti perdite in accuratezza di predizione.
+
+% esperimenti
+L'efficacia dei modelli realizzati è stata testata su problemi reali appartenenti all'ambito della Chemioinformatica. 
+Gli esperimenti svolti hanno mostrato nei modelli proposti la capacità di ottenere un'accuratezza nelle predizioni comparabile, ed in molti casi migliore, rispetto ai modelli non costruttivi.
+%Gli esperimenti svolti hanno mostrato come i modelli proposti, nonostante richiedano un impiego inferiore di risorse computazionali, siano in grado in molti casi di migliorare le performance raggiunte attraverso l'utilizzo di modelli non costruttivi. 
+Il ruolo degli output-feedback è stato indagato attraverso un approccio sia quantitativo che qualitativo, mettendo in luce come l'introduzione di informazione supervisionata all'interno dei reservoir sia effettivamente in grado di influenzarne le dinamiche in maniera coerente con il task affrontato, in netta contrapposizione con quanto avviene in assenza di output-feedback. 
+% criticità
+L'analisi sperimentale ha anche fatto emergere alcuni aspetti critici nei modelli proposti. L'impiego di output-feedback verso i reservoir non risulta infatti in maniera sistematica in un aumento della capacità di generalizzazione dei modelli, suggerendo quindi l'adozione di meccanismi di regolarizzazione forti, tesi ad evitare situazioni di overfitting. Inoltre, benché le dimensioni della rete siano determinate in maniera automatica, il numero di unità che compongono i reservoir delle sotto-reti risulta essere un fattore importante per le capacità dei modelli. La determinazione di un valore adeguato per tale parametro può tuttavia essere affrontata tramite un processo di selezione che coinvolga l'esperienza empirica o, eventualmente, attraverso il processo di model selection.
+
+% spunti futuri (estendere)
+L'aver indirizzato un approccio innovativo nel campo del Reservoir Computing fornisce anche spunti per ulteriori sperimentazioni. 
+La strategia costruttiva proposta è estremamente flessibile ed è ragionevole ipotizzare che altre varianti topologiche, oltre a quelle realizzate, possano essere oggetto di investigazione. I modelli sperimentati sfruttano infatti uno schema di connessioni fra le sotto-reti molto semplice, che può facilmente essere modificato in modo da implementare, ad esempio, politiche di propagazione degli output-feedback che tengano conto della topologia (e.g.\ collegando una sotto-rete solo alle sotto-reti più prossime) o delle performance (e.g.\ assegnando alle connessioni pesi differenti in base alle performance ottenute dalle singole sotto-reti).
+Altrettanto importante e variegata è anche la gamma degli algoritmi di learning o dei sotto-task utilizzabili per l'allenamento delle sotto-reti, anch'essa possibile oggetto di ulteriori indagini così come l'impiego di sotto-reti eterogenee (e.g.\ nella dimensione del reservoir) selezionate tramite un pool.
+
+\`E infine opportuno sottolineare che parte dei contenuti discussi nel corso della tesi sono stati riportati nell'articolo \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains} \cite{Gallicchio:ConstructiveReservoir}, che verrà discusso nel corso del XX European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning.
+
+
+
+
+
+
+%\begin{comment}
+%
+%Limitando gli effetti dell'utilizzo di reservoir prefissati e non adattivi, l'approccio costruttivo consente infatti di determinare in maniera automatica il numero di unità e la topologia della rete ed offre la possibilità di realizzare uno schema stabile di output-feedback, in grado di introdurre informazione supervisionata nel processo di encoding dei reservoir.
+%
+%I modelli proposti si caratterizzano per l'introduzione di un approccio costruttivo nell'ambito del Reservoir Computing, sfruttato per offrire soluzioni ad alcuni dei problemi aperti in questo campo. L'adozione di una strategia costruttiva permette infatti di determinare in maniera automatica il numero di unità e la topologia della rete e consente l'introduzione di uno schema di output-feedback stabile, in grado di introdurre informazione supervisionata nel processo di encoding dei reservoir.
+%
+%
+%
+%L'aver adottato una strategia costruttiva ha permesso la formulazione di modelli molto efficienti dal punto di vista computazionale. L'allenamento ed il processo di model selection per le reti proposte risultano infatti vantaggiosi anche se si guarda al solo ambito del Reservoir Computing, di per sé caratterizzato da oneri computazionali estremamente ridotti. In quest'ottica, quanto realizzato si configura come uno strumento pratico ed efficace nel trattamento di domini strutturati che permette di guadagnare in efficienza senza comportare perdite in termini di accuratezza di predizione.
+%
+%Con l'introduzione di un sistema stabile di output-feedback si è invece implementato un meccanismo che permetta di sfruttare la presenza di informazione supervisionata all'interno del processo di encoding del Reservoir Computing. L'uso di informazioni di questo tipo è stato possibile grazie alla fusione di due mondi ad oggi separati, quello del Reservoir Computing e quello delle Reti Neurali Costruttive, e dà risposta, anche se in maniera parziale, ad un'esigenza già emersa nella sfera del Reservoir Computing.
+%
+%L'efficacia dei modelli realizzati è stata testata su problemi reali appartenenti all'ambito della Chemioinfomatica. Gli esperimenti svolti hanno mostrato come i modelli proposti, nonostante richiedano un impiego inferiore di risorse computazionali, siano in grado in molti casi di migliorare le performance raggiunte attraverso l'utilizzo di modelli non costruttivi. L'analisi sperimentale ha inoltre messo in luce gli effetti degli output-feedback sugli stati dei reservoir, evidenziando come il loro impiego possa effettivamente arricchirne le dinamiche, influenzandole in maniera consistente con il task affrontato.
+%
+%Il lavoro svolto ha anche messo in luce alcune criticità. Il ruolo positivo degli output-feedback, ad esempio, non è completamente supportato dai risultati sperimentali, almeno in termini di performance. Non sempre, infatti, il loro impiego ha comportato un miglioramento della capacità di generalizzazione della rete. Oltre a questo, il numero di unità nel reservoir rimane comunque un iperparametro critico, limitando i benefici derivanti dall'approccio costruttivo. Entrambi questi aspetti possono essere oggetto di ulteriori ricerche.
+%
+%L'aver indirizzato un approccio innovativo nel campo del Reservoir Computing lascia inoltre emergere ulteriori spunti di sperimentazione. La strategia costruttiva proposta è infatti estremamente flessibile ed è ragionevole ipotizzare che molte altre varianti topologiche, oltre a quelle proposte, possano essere oggetto di investigazione. Altrettanto importante e variegata è anche la gamma degli algoritmi di learning o dei sotto-task utilizzabili per l'allenamento delle sotto-reti, anch'essa possibile oggetto di ulteriori indagini così come l'impiego di sotto-reti eterogenee selezionate tramite un pool.
+%
+%\`E infine opportuno sottolineare come parte dei contenuti della tesi siano oggetto dell'articolo \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains} \cite{Gallicchio:ConstructiveReservoir}, che sarà presentato nel corso del XX European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning.
+%
+%
+%
+%Parte dei risultati riportati nel seguito è inoltre discussa nell'articolo scientifico \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains}, inviato all'European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning\footnote{\url{http://www.dice.ucl.ac.be/esann/}} ed attualmente in fase di revisione.
+%
+%Pro:
+%\begin{itemize}
+%\item Approccio costruttivo ed output-feedback stabili (vedi draft)
+%\item Dire del draft / Siamo alla frontiera della ricerca 
+%\item Ci siamo misurati con problemi del mondo reale
+%\item Efficienza computazionale (importante)
+%\item Trattamento di grafi ciclici/indiretti.
+%\item Fase di codifica non adattiva ma neppure manuale
+%\item L'approccio costruttivo nelle ESN di fatto non esiste, anche se Luko lo lascia intendere.
+%\end{itemize}
+%
+%Contro / future works:
+%\begin{itemize}
+%\item I vantaggi computazionali non sono esattamente quelli di una cascade correlation, visto che le GraphESN già usano algoritmi di training efficienti (in CC evitavamo la BackPropagation).
+%\item Gli output-feedback non ``staccano'' nettamente gli altri modelli, eppure diverse cose ci dicono che possono funzionare.
+%\item Le strategie possibili sono molte di più di quelle effettivamente sperimentate: topologia, training, sotto-task, criteri di stop.
+%\item Evitare l'allenamento del readout, come nell'articolo trovato da Claudio (che però non trovo in pdf).
+%\item Il numero di unità del reservoir.
+%\end{itemize}
+%
+%% In una cascade correlation tutti i pesi vengono allenati e l'approccio costruttivo permette di ``spezzettare'' questo lavoro in più parti, meno onerose (n.b. non usa backpropagation!). Noi non siamo esattamente in questa situazione, o almeno non del tutto: nel nostro caso l'allenamento è semplice di suo.
+%
+%% Costo computazionale mica pizza e fichi
+%
+%% Luko quando parla dei feedback e lascia intendere l'approccio costruttivo
+%
+%% L'articolo che ha trovato Claudio suggerisce la possibilità di non allenare affatto il readout-globale.
+%
+%% Molte possibili strategie, molte più di quelle sperimentate/riportate: nella topologia, nel training, nei sotto-task.
+%
+%\end{comment}

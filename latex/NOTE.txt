@@ -1,0 +1,31 @@
+
+- Introduzione:
+    - Reservoir Computing
+        + (ELM)
+        + Feedback
+    - Approcci Costruttivi
+        + Cascade Correlation
+    - Modelli per strutture
+        + Chemioinformatica
+        + GNN (Scarselli - The Graph Neural Network Model)
+        + TreeESN
+        + GraphESN
+        + (PhiESN)
+        
+- Modelli
+    - Generale
+        + Costo computazionale
+    - Zero
+    - Forward
+    - Forward Output-feedback
+    - Backward Output-feedback
+
+- Framework
+    + (PhiESN)
+
+- Risultati sperimentali
+    - Dataset
+    - Setting
+    - Test
+
+- Conclusioni

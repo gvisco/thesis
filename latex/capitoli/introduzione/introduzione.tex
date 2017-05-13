@@ -1,0 +1,243 @@
+\chapter{Introduzione}
+Il Machine Learning \cite{Mitchell:ML, Hastie:EOSL} si propone di ampliare la classe dei problemi trattabili laddove non risultino applicabili approcci algoritmici o analitici. Rilevante è in questo ambito il trattamento di domini strutturati: in molti settori applicativi, infatti, i dati trattati trovano una propria rappresentazione naturale in forma di grafi. Estendere le metodologie di Machine Learning per affrontare problemi definiti su domini strutturati rappresenta dunque un'opportunità per dare risposte efficaci a problemi esistenti, aprendo spazio per lo sviluppo di nuove applicazioni.
+
+Nel realizzare questo obiettivo, quanto verrà discusso nel seguito si orienta in particolare al paradigma neurale, che nell'ambito del Machine Learning ricopre un ruolo rilevante, attingendo a tecniche e modelli esistenti per introdurre soluzioni originali nel campo del trattamento dei domini strutturati. Le Reti Neurali Artificiali \cite{Haykin:NN,Bishop:NNFPR} sono infatti un insieme vasto e variegato di modelli computazionali, efficacemente applicati a problemi reali. Nate per sfruttare un approccio connessionista di rappresentazione delle informazioni, le Reti Neurali Artificiali offrono importanti caratteristiche computazionali e, nella loro forma più semplice di Reti Neurali Feedforward \cite{Bishop:NNFPR,Haykin:NN}, risultano in grado di approssimare con precisione arbitraria qualsiasi funzione continua~\cite{Cybenko:ApproximationBySuperpositions}.
+
+Benché l'apprendimento in una Rete Neurale Artificiale avvenga modificando i pesi sulle connessioni, nascono nell'ambito delle Reti Neurali Feedforward anche algoritmi e strategie che guardano alla struttura della rete e alla sua realizzazione per migliorarne o semplificarne il processo di creazione e di allenamento. L'approccio costruttivo \cite{Smieja:NeuralNetworkConstructive,Fahlman:CC,Littmann:learningAndGeneralization}, ad esempio, propone un procedimento incrementale per la costruzione della rete nella suo complesso, secondo un meccanismo guidato direttamente dalle caratteristiche del problema affrontato. 
+In questo caso la rete cresce in maniera iterativa, potendo sfruttare ad ogni passo tutte le informazioni precedentemente apprese ed adattando la propria dimensione alla complessità del problema. Ne risulta il vantaggio di non dover stabilire a priori la topologia della rete, strettamente legata alla sua capacità computazionale, e di poter scomporre il problema in sotto-problemi, singolarmente affrontati attraverso procedimenti di allenamento più semplici e computazionalmente efficienti.
+
+Nonostante le Reti Neurali Feedforward, usate per apprendere funzioni definite su vettori, siano la classe di Reti Neurali Artificiali più ampiamente diffusa nel contesto dei Machine Learning, l'approccio neurale propone anche paradigmi e modelli orientati all'apprendimento su domini più complessi.
+\`E il caso delle Reti Neurali Ricorrenti \cite{Tsoi:DiscreteTimeRNN, Elman:FindingStructure}, che generalizzano le Reti Neurali Feedforward al trattamento di sequenze attraverso l'introduzione di cicli nella topologia delle connessioni fra le unità.
+Benché reti di questo tipo risultino efficienti nel contesto del Machine Learning, il costo computazionale del loro allenamento risulta un campo di studio aperto; è in questo contesto infatti che nasce il paradigma del Reservoir Computing \cite{Lukosevicius:ESN-Survey,Verstraeten:AnExperimentalUnification,Jaeger:HarnessingNonlinearity}: una classe di modelli caratterizzati dalla separazione concettuale tra una parte ricorrente (i.e. con connessioni cicliche fra le unità) ed una parte non-ricorrente per il calcolo del segnale di uscita. 
+L'opportunità di limitare l'apprendimento alla sola parte non-ricorrente del modello, lasciando inalterata la parte ricorrente, rappresenta il punto di forza del Reservoir Computing, consentendo l'impiego di strategie di allenamento molto efficienti dal punto di vista computazionale. A fronte di questo vantaggio la presenza di una porzione di rete non soggetta ad allenamento determina un limite per i modelli esistenti: una parte delle dinamiche della rete risulta infatti fissata a priori e non ha la capacità di adattarsi al problema affrontato.
+
+L'apprendimento di funzioni definite su domini strutturati (i.e. trasduzioni strutturali), obiettivo della tesi, è affrontato in ambito neurale attraverso le Reti Neurali Ricorsive \cite{Frasconi:AGeneralFramework, Sperduti:SupervisedNeuralNetworks}, che generalizzano le Reti Neurali Ricorrenti. 
+Benché in svariati campi si abbiano esempi applicativi di modelli neurali ricorsivi --- per citarne solo alcuni, nella Chimica \cite{Bianucci:ApplicationOfCascade,Micheli:AnalysisOfTheInternal,Bertinetto:EvaluationOfHierarchical}, nella Proteomica \cite{Baldi:ThePrincipledDesign}, nel trattamento e riconoscimento di immagini \cite{Frasconi:AGeneralFramework} o nell'Ingegneria del Software \cite{Frasconi:AGeneralFramework} --- il legame fra la topologia dell'input e le dinamiche interne della rete impone, nelle Reti Neurali Ricorsive, dei vincoli sulla classe degli input trattabili: nella loro formulazione originale, reti di questo tipo risultano infatti applicabili unicamente a dati strutturati che presentino un ordinamento topologico fra i vertici, il che limita il dominio di input alla sola classe dei Grafi Diretti Aciclici. Tale assunzione ha impatto sulla capacità dei modelli \cite{Micheli:ContextualProcessing}, limitando dunque il numero di problemi affrontabili rispetto a quanto avverrebbe potendo trattare la classe più generale dei grafi.
+\\
+In risposta a questa esigenza, nella storia recente delle Reti Neurali Ricorsive si ritrovano vari modelli tesi all'ampliamento della classe di input. Due approcci distinti, in particolare, lasciano emergere elementi interessanti per la realizzazione di modelli neurali in grado di apprendere trasduzioni strutturali definite su grafi.\\
+Il modello \emph{Neural Networks for Graphs} (NN4G) \cite{Micheli:NN4G} adotta una strategia costruttiva per evitare i problemi determinati dalla presenza di cicli nell'input e per sfruttare localmente informazioni globali, legate alla topologia dei dati: ad ogni iterazione del processo di costruzione della rete, infatti, nuove informazioni relative alla struttura del grafo vengono raccolte e rese disponibili per semplificare l'apprendimento nelle unità aggiunte successivamente.\\
+Un approccio differente è individuato dal modello \emph{Graph Echo State Network} (GraphESN) \cite{Gallicchio:GraphESN}, appartenente all'ambito del Reservoir Computing, che sfrutta le caratteristiche strutturali della rete per realizzare il trattamento di domini strutturati generici. Ne risulta un modello di Rete Neurale Ricorsiva efficiente per l'apprendimento di trasduzioni strutturali definite su grafi, che tuttavia mantiene inalterate alcune delle criticità caratteristiche del Reservoir Computing.
+
+Da quanto detto emergono dunque necessità e limitazioni legate all'apprendimento su domini strutturati attraverso il paradigma neurale.
+In particolare, in una disciplina fortemente orientata alle applicazioni come il Machine Learning, il costo computazionale e la classe degli input trattabili risultano essere aspetti molto rilevanti. Il paradigma del Reservoir Computing offre strumenti efficaci per rispondere a simili necessità, ma presenta tuttavia degli elementi critici, legati alla presenza di una porzione di rete fissata a priori e mantenuta inalterata durante l'apprendimento. La determinazione della topologia appropriata e l'opportunità di modificare le dinamiche dell'intera rete sulla base del problema affrontato, sono infatti limiti la cui risoluzione rimane ad oggi un problema aperto \cite{Lukosevicius:ESNwithTrainedFeedbacks,Wyffels:stableOutputFeedback,Reinhart:ReservoirRegularization}.
+L'approccio costruttivo offre soluzioni in tal senso, proponendo una strategia efficiente per determinare la struttura della rete in maniera automatica e per sfruttare le informazioni raccolte nel corso del processo incrementale di costruzione della rete.
+\\
+Quanto discusso nel seguito ha dunque l'obiettivo di sintetizzare questi elementi, introducendo nuovi modelli ricorsivi appartenenti all'ambito del Reservoir Computing, che permettano l'adozione di una strategia costruttiva nell'apprendimento di trasduzioni strutturali.
+In particolare, i modelli descritti nel seguito rappresentano un'estensione delle GraphESN, caratterizzandosi dunque come modelli efficienti per il trattamento di domini strutturati generali. L'introduzione della strategia costruttiva, innovativa nell'ambito del Reservoir Computing, ha impatto sui modelli proposti dal punto di vista computazionale ed algoritmico, riducendo il costo necessario all'allenamento ed evitando il problema di dover fissare a priori la topologia della rete. L'opportunità di sfruttare localmente informazioni globali e supervisionate viene invece usata per modificare le dinamiche di quella porzione di rete che nel Reservoir Computing non è soggetta ad allenamento. Ne risulta un meccanismo stabile per introdurre informazione supervisionata, anche in assenza di una fase di adattamento specifica, che possa influenzare le dinamiche della rete in maniera consistente con il problema affrontato.
+
+Le capacità dei modelli introdotti sono testate, attraverso una procedura rigorosa di validazione, su problemi di Chemioinformatica relativi a dataset reali noti in letteratura. Parte dei risultati riportati nel seguito è inoltre oggetto dell'articolo \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains} \cite{Gallicchio:ConstructiveReservoir}, che sarà discusso nel corso del XX European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning\footnote{\url{http://www.dice.ucl.ac.be/esann/}}.
+
+% contenuti
+L'esposizione degli argomenti nel testo è articolata come segue:
+\begin{description}
+\item[Nel capitolo~\ref{ch:background}] si introducono i temi, le tecniche ed i modelli alla base del lavoro svolto. Nel corso di questa rassegna dello stato dell'arte vengono in particolare presentati i principi dell'approccio costruttivo e del Reservoir Computing, descrivendo anche modalità ed obiettivi nel trattamento dei domini strutturati.
+\item[Nel capitolo~\ref{ch:modelli}] vengono introdotti i modelli originali, oggetto del lavoro di tesi, ne vengono presentate le caratteristiche e discussi gli aspetti specifici.
+\item[Nel capitolo~\ref{ch:esperimenti}] sono descritti i risultati sperimentali ottenuti testando le capacità dei modelli su una serie di problemi del mondo reale appartenenti all'ambito della Chemioinformatica. 
+\item[Nel capitolo~\ref{ch:conclusioni}] viene presentata una valutazione del lavoro svolto, con l'obiettivo di determinare vantaggi e criticità dei modelli proposti nonché di individuare di quegli aspetti che potrebbero essere oggetto di un ulteriore, specifico, lavoro di indagine e sperimentazione.
+\end{description}
+
+%\begin{comment}
+%
+%% Estensione delle metodologie per trattare domini strutturati e Machine Learning
+%Il Machine Learning \cite{Mitchell:ML, Hastie:EOSL} si propone di ampliare la classe dei problemi trattabili laddove non risultino applicabili approcci algoritmici o analitici. Rilevante è dunque in questo ambito il trattamento di domini strutturati: in molti settori applicativi, infatti, i dati trattati trovano una propria rappresentazione naturale in forma di grafi. Per citarne solo alcuni, si hanno esempi in questo senso nella Chimica \cite{Bianucci:ApplicationOfCascade,Micheli:AnalysisOfTheInternal,Bertinetto:EvaluationOfHierarchical}, nella Proteomica \cite{Baldi:ThePrincipledDesign}, nel trattamento e riconoscimento di immagini \cite{Frasconi:AGeneralFramework} o nell'Ingegneria del Software \cite{Frasconi:AGeneralFramework}. Estendere le metodologie di Machine Learning per affrontare problemi definiti su domini strutturati, rappresenta quindi un modo per dare risposte efficaci a problemi esistenti, aprendo spazio per lo sviluppo di nuove applicazioni.
+%
+%% Approccio neurale: Reti Neurali Artificiali
+%Nell'ambito del Machine Learning il paradigma neurale ricopre un ruolo rilevante. Le Reti Neurali Artificiali \cite{Haykin:NN,Bishop:NNFPR} sono infatti un insieme vasto e variegato di modelli computazionali, efficacemente applicati a problemi reali. In analogia con il modello biologico, in una Rete Neurale Artificiale numerose unità (neuroni) sono collegate fra loro attraverso connessioni pesate (sinapsi) che permettono ad un segnale (attivazione) di propagarsi. 
+%La configurazione della topologia e dei pesi sulle connessioni ha dunque impatto sul modo in cui il segnale di ingresso viene propagato, e quindi sul segnale di uscita. Grazie a questo, le Reti Neurali Feedforward \cite{Bishop:NNFPR,Haykin:NN}, caratterizzate dal susseguirsi di più livelli di unità non lineari connesse fra loro secondo una topologia aciclica, risultano essere approssimatori universali \cite{Cybenko:ApproximationBySuperpositions} e sono in grado cioè di approssimare con precisione arbitraria qualsiasi funzione continua.
+%%L'apprendimento supervisionato in una Rete Neurale Artificiale avviene dunque adattando i pesi delle connessioni con il fine di approssimare una funzione non nota, a partire da dati di esempio. 
+%
+%% Approccio costruttivo
+%
+%Benché l'apprendimento in una Rete Neurale Artificiale avvenga modificando i pesi sulle connessioni, nascono nell'ambito delle Reti Neurali Feedforward anche algoritmi e strategie che guardano alla struttura della rete per migliorarne o semplificarne il processo di creazione e di allenamento. L'approccio costruttivo \cite{Smieja:NeuralNetworkConstructive,Fahlman:CC,Littmann:learningAndGeneralization}, ad esempio, propone un procedimento incrementale per la costruzione della rete nel suo complesso: iterativamente singole unità vengono aggiunte, collegate alle precedenti ed allenate, secondo un meccanismo guidato dalle caratteristiche del problema affrontato. La rete, dunque, cresce in maniera incrementale, sfruttando ad ogni iterazione tutte le informazioni precedentemente apprese.
+%%Facendo leva sull'importanza che la topologia delle connessioni ricopre nel determinare le caratteristiche di una rete, nasce nel contesto delle Reti Neurali Feedforward l'idea di adottare un approccio costruttivo \cite{Smieja:NeuralNetworkConstructive,Fahlman:CC,Littmann:learningAndGeneralization}
+%%L'idea di adottare un approccio costruttivo \cite{Smieja:NeuralNetworkConstructive,Fahlman:CC,Littmann:learningAndGeneralization} nasce nel contesto delle Reti Neurali Feedforward con lo scopo di semplificare il processo di creazione e di allenamento dei modelli. La strategia proposta in questo caso sfrutta infatti un procedimento incrementale per la costruzione della rete nella sua totalità: iterativamente singole unità vengono aggiunte alla rete, collegate alle precedenti ed allenate, secondo un meccanismo guidato dalle caratteristiche del problema affrontato. La rete, dunque, cresce in maniera incrementale, sfruttando ad ogni iterazione tutte le informazioni precedentemente apprese.\\
+%L'adozione dell'approccio costruttivo offre il vantaggio di non dover stabilire a priori la topologia della rete, strettamente legata alla sua capacità computazionale, riducendo inoltre il costo computazionale dell'allenamento, che in questo caso risulta circoscritto a singole unità e può dunque essere svolto tramite algoritmi più semplici ed efficienti. 
+%Da un punto di vista più generale, la strategia costruttiva evidenzia inoltre come il paradigma neurale offra naturalmente gli strumenti necessari alla suddivisione di un problema in sotto-problemi, che si rispecchia nella visione concettuale di una rete come formata da più parti che cooperano fra loro.
+%
+%% Reti Neurali Ricorrenti e Reservoir Computing
+%Nonostante le Reti Neurali Feedforward, usate per apprendere funzioni definite su vettori, siano la classe di Reti Neurali Artificiali più ampiamente diffusa nel contesto dei Machine Learning, l'approccio neurale propone anche paradigmi e modelli orientati all'apprendimento su domini più complessi.
+%%Ampiamente diffuso per l'apprendimento di funzioni definite su vettori, l'approccio neurale propone anche paradigmi e modelli orientati all'apprendimento su domini più complessi.
+%%Benché sia stato a lungo legato all'apprendimento di funzioni definite su vettori, l'approccio neurale ha visto nascere paradigmi e modelli orientati all'apprendimento su domini più complessi. 
+%\`E il caso delle Reti Neurali Ricorrenti \cite{Tsoi:DiscreteTimeRNN, Elman:FindingStructure}, che generalizzano le Reti Neurali Feedforward al trattamento di sequenze, attraverso l'introduzione di cicli nella topologia delle connessioni fra le unità.\\
+%Benché reti di questo tipo risultino efficienti nell'ambito del Machine Learning per domini strutturati, il costo computazionale del loro allenamento risulta un campo di studio aperto.
+%\`E in questo contesto infatti che nasce il paradigma del Reservoir Computing \cite{Lukosevicius:ESN-Survey,Verstraeten:AnExperimentalUnification,Jaeger:HarnessingNonlinearity}: una classe di modelli caratterizzati dalla separazione concettuale tra una parte ricorrente (i.e. con connessioni cicliche fra le unità) ed una parte non-ricorrente per il calcolo del segnale di uscita. 
+%L'opportunità di limitare l'apprendimento alla sola parte non-ricorrente del modello, lasciando inalterata la parte ricorrente, rappresenta il punto di forza dell'approccio individuato dal Reservoir Computing, consentendo l'impiego di strategie di allenamento molto efficienti dal punto di vista computazionale. A fronte di questo vantaggio, tuttavia, la presenza di dinamiche di stato che non vengono interessate da alcun tipo di adattamento rappresenta un limite per i modelli esistenti di Reservoir Computing: una parte delle dinamiche della rete risulta infatti fissata a priori e non ha la capacità di adattarsi al problema affrontato.
+%
+%% Reti Neurali Ricorsive 
+%L'obiettivo dell'apprendimento di funzioni definite su domini strutturati (i.e. trasduzioni strutturali) è affrontato, in ambito neurale, attraverso le Reti Neurali Ricorsive \cite{Frasconi:AGeneralFramework, Sperduti:SupervisedNeuralNetworks}, che generalizzano le Reti Neurali Ricorrenti.
+%Il legame fra la topologia dell'input e le dinamiche interne della rete impone tuttavia in questo caso dei vincoli sulla classe degli input trattabili. Nella loro formulazione originale, infatti, le Reti Neurali Ricorsive risultano applicabili unicamente a dati strutturati che presentino un ordinamento topologico fra i vertici, il che limita il dominio di input ai soli Grafi Diretti Aciclici. Tale assunzione ha impatto sulla capacità dei modelli \cite{Micheli:ContextualProcessing}, limitando il numero di problemi efficacemente affrontabili rispetto a quanto avverrebbe potendo trattare la classe più generale dei grafi.
+%
+%% NN4G e GraphESN
+%Nella storia recente delle Reti Neurali Ricorsive si ritrovano vari modelli tesi all'ampliamento della classe degli input trattabili, orientati dunque all'apprendimento di trasduzioni strutturali generiche. 
+%Due approcci distinti, in particolare, lasciano emergere elementi interessanti per la realizzazione di modelli neurali in grado di trattare domini strutturati generici (i.e. grafi).\\
+%Il modello \emph{Neural Networks for Graphs} (NN4G) \cite{Micheli:NN4G} sfrutta un approccio costruttivo per evitare i problemi legati alla presenza di cicli nell'input. L'adozione di una strategia costruttiva permette inoltre in questo caso di sfruttare localmente informazioni globali, legate alla topologia dell'input. Ad ogni ciclo del processo di costruzione della rete, infatti, nuove informazioni relative alla struttura dei dati vengono raccolte e rese disponibili per le unità aggiunte successivamente.\\
+%Un secondo esempio di Reti Neurali Ricorsive per il trattamento di grafi è dato dal modello \emph{Graph Echo State Network} (GraphESN) \cite{Gallicchio:GraphESN}, appartenente all'ambito del Reservoir Computing, che sfrutta le caratteristiche strutturali della rete per realizzare il trattamento di domini strutturati generici. Ne risulta dunque un modello di Rete Neurale Ricorsiva efficiente per l'apprendimento di trasduzioni strutturali definite su grafi, che tuttavia mantiene inalterate alcune delle criticità caratteristiche del Reservoir Computing.
+%
+%
+%% Motivazioni e limitazioni
+%Da quanto detto emergono dunque necessità e limitazioni legate all'apprendimento di trasduzioni strutturali attraverso il paradigma neurale.
+%In una disciplina fortemente orientata alle applicazioni come il Machine Learning, il costo computazionale e la classe degli input trattabili rappresentano infatti degli aspetti molto rilevanti. Il paradigma del Reservoir Computing offre soluzioni efficaci per rispondere a simili necessità, ma presenta tuttavia degli elementi critici. In particolare la presenza di una porzione di rete fissata a priori, e mantenuta inalterata durante l'apprendimento, si configura come una limitazione. La determinazione della topologia di rete appropriata e l'opportunità di modificare le dinamiche dell'intera rete sulla base del problema affrontato, sono infatti limiti la cui risoluzione rimane ad oggi un problema aperto \cite{Lukosevicius:ESNwithTrainedFeedbacks,Wyffels:stableOutputFeedback,Reinhart:ReservoirRegularization}.
+%L'approccio costruttivo offre tuttavia soluzioni in tal senso, proponendo una strategia efficiente per determinare la topologia della rete in maniera automatica e per sfruttare le informazioni raccolte nel corso del processo incrementale di costruzione della rete.
+%
+%
+%% Cosa ci proponiamo di fare
+%Quanto verrà discusso nel seguito ha dunque l'obiettivo di introdurre nuovi modelli di Reti Neurali Ricorsive appartenenti all'ambito del Reservoir Computing, che permettano l'adozione di una strategia costruttiva nell'apprendimento di trasduzioni strutturali. In particolare, i modelli descritti nel seguito rappresentano un'estensione delle GraphESN, caratterizzandosi dunque come modelli efficienti per il trattamento di domini strutturati generali. L'introduzione della strategia costruttiva, innovativa nell'ambito del Reservoir Computing, ha impatto sui modelli proposti dal punto di vista computazionale ed algoritmico, riducendo il costo computazionale ed evitando il problema di dover fissare a priori la topologia della rete. Applicato al trattamento dei domini strutturati, inoltre, l'approccio costruttivo offre l'opportunità di sfruttare localmente informazioni globali e supervisionate. Tale caratteristica viene usata, nei modelli proposti, per influenzare le dinamiche di quella porzione di rete che nel Reservoir Computing non è soggetta ad allenamento. Ne risulta un meccanismo stabile per introdurre informazione supervisionata, anche in assenza di una fase di adattamento specifica, che possa influenzare le dinamiche della rete in maniera consistente con il problema affrontato.
+%
+%Le capacità dei modelli introdotti sono testate, attraverso una procedura rigorosa di validazione, su problemi di Chemioinformatica relativi a dataset reali noti in letteratura. Parte dei risultati riportati nel seguito è inoltre oggetto dell'articolo \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains} \cite{Gallicchio:ConstructiveReservoir}, che sarà discusso nel corso del XX European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning\footnote{\url{http://www.dice.ucl.ac.be/esann/}}.
+%
+%% contenuti
+%L'esposizione degli argomenti nel testo è articolata come segue:
+%\begin{description}
+%\item[Nel capitolo~\ref{ch:background}] si introducono i temi, le tecniche ed i modelli alla base del lavoro svolto. Nel corso di questa rassegna dello stato dell'arte vengono in particolare presentati i principi dell'approccio costruttivo e del Reservoir Computing, descrivendo anche modalità ed obiettivi nel trattamento dei domini strutturati.
+%\item[Nel capitolo~\ref{ch:modelli}] vengono introdotti i modelli originali, oggetto del lavoro di tesi, ne vengono presentate le caratteristiche e discussi gli aspetti specifici.
+%\item[Nel capitolo~\ref{ch:esperimenti}] sono descritti i risultati sperimentali ottenuti testando le capacità dei modelli su una serie di problemi del mondo reale appartenenti all'ambito della Chemioinformatica. 
+%\item[Nel capitolo~\ref{ch:conclusioni}] la tesi si conclude con una valutazione del lavoro svolto nonché l'individuazione di quegli aspetti che potrebbero essere oggetto di un ulteriore, specifico, lavoro di indagine e sperimentazione.
+%\end{description}
+%
+%
+%\end{comment}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\begin{comment}
+%Il Machine Learning \cite{Mitchell:ML, Hastie:EOSL} si propone di ampliare la classe dei problemi trattabili laddove non risultino applicabili approcci algoritmici o analitici. Rilevante è dunque in questo ambito il trattamento di domini strutturati: in molti settori applicativi, infatti, i dati trattati trovano una propria rappresentazione naturale in forma di grafi. Estendere le metodologie di Machine Learning per affrontare problemi definiti su domini strutturati, rappresenta quindi un modo per dare risposte efficaci a problemi esistenti, aprendo spazio per lo sviluppo di nuove applicazioni. Spostare la frontiera che delimita i problemi trattabili è dunque l'obiettivo di fondo della tesi, affrontato proponendo nuovi modelli di Machine Learning che possano apprendere funzioni definite su grafi.
+%
+%Dei vari approcci possibili nel contesto del Machine Learnig, i modelli realizzati si rifanno a quello neurale. Le Reti Neurali Artificiali \cite{Haykin:NN,Bishop:NNFPR} sono infatti un insieme vasto e variegato di modelli computazionali che trovano impiego in numerosi contesti applicativi e che, benché siano ampiamente diffuse per l'apprendimento di funzioni definite su vettori, offrono strumenti utili al trattamento di domini complessi. 
+%Attraverso le Reti Neurali Ricorrenti \cite{Tsoi:DiscreteTimeRNN, Elman:FindingStructure} è infatti possibile apprendere delle trasduzioni di sequenza, ovvero delle funzioni definite su un dominio di sequenze temporali, mentre le Reti Neurali Ricorsive \cite{Frasconi:AGeneralFramework, Sperduti:SupervisedNeuralNetworks} realizzano l'apprendimento su domini strutturati. Grazie a queste classi di modelli, il paradigma neurale ha subito una notevole evoluzione negli ultimi anni, rivelandosi efficace nel trattamento di numerosi problemi reali. 
+%
+%Le Reti Neurali Ricorrenti \cite{Tsoi:DiscreteTimeRNN, Elman:FindingStructure} e le Reti Neurali Ricorsive \cite{Frasconi:AGeneralFramework, Sperduti:SupervisedNeuralNetworks} permettono infatti, rispettivamente, di apprendere funzioni definite 
+%
+%Le Reti Neurali Artificiali \cite{Haykin:NN,Bishop:NNFPR}, in larga parte applicate per l'apprendimento di funzioni definite su vettori, offrono infatti modelli e tecniche per il 
+%
+%Quello delle Reti Neurali Artificiali \cite{Haykin:NN,Bishop:NNFPR} è un paradigma rilevante nell'ambito del Machine Learning
+%Dei vari approcci possibili nel contesto del Machine Learning per il trattamento di domini strutturati, quello neurale ha subito una notevole evoluzione negli ultimi anni, rivelandosi efficace nel trattamento di numerosi problemi reali. Per citarne solo alcuni, si hanno esempi in questo senso nella Chimica \cite{Bianucci:ApplicationOfCascade,Micheli:AnalysisOfTheInternal,Bertinetto:EvaluationOfHierarchical}, nella Proteomica \cite{Baldi:ThePrincipledDesign}, nel trattamento e riconoscimento di immagini \cite{Frasconi:AGeneralFramework} o nell'Ingegneria del Software \cite{Frasconi:AGeneralFramework}. A fronte dei successi raggiunti, tuttavia, quella degli approcci neurali al trattamento di domini complessi si configura ad oggi come una frontiera della ricerca che non manca di mostrare criticità e margini di miglioramento.
+%Fra gli aspetti critici certamente più rilevanti, due in particolare influenzano il lavoro svolto: il costo computazionale e la classe degli input trattabili. 
+%
+%Il costo computazionale, elemento critico nei modelli neurali in generale, acquista infatti un ruolo particolarmente determinante nel trattamento di domini complessi (e.g.\ sequenze, alberi o grafi): in una disciplina fortemente orientata alle applicazioni come il Machine Learning, il costo computazionale rappresenta infatti un vincolo tutt'altro che teorico sull'applicabilità dei modelli. Nell'ambito delle Reti Neurali Ricorrenti \cite{Tsoi:DiscreteTimeRNN, Elman:FindingStructure}
+%
+%\end{comment}
+
+
+
+%\begin{comment}
+%- Motivazione generale: importanza dell'estensione delle metodologie per trattare domini strutturati.
+%- Collocazione generale: Machine Learning.
+%- Collocazione: Approccio neurale, RNN e RecNN.
+%- Problemi legati al trattamento di domini strutturati: costo e classe di input.
+%- Reservoir Computing: soluzioni (costo computazionale ridotto e grafi generici) e limiti (mancanza di un approccio costruttivo, reservoir fissi, mancanza di un approccio stabile di output-feedback).
+%- Cosa ci proponiamo di fare: introduzione di una strategia costruttiva in ambito RC: topologia adattiva, maggiore efficienza, trattamento dei grafi, introduzione di un meccanismo stabile di output-feedback per introdurre informazione supervisionata.
+%
+%
+%
+%Artificial recurrent neural networks (RNNs) represent a large and varied
+%class of computational models that are designed by more or less detailed
+%analogy with biological brain modules. In an RNN numerous abstract neu-
+%rons (also called units or processing elements) are interconnected by like-
+%wise abstracted synaptic connections (or links), which enable activations to
+%propagate through the network. The characteristic feature of RNNs that
+%distinguishes them from the more widely used feedforward neural networks
+%is that the connection topology possesses cycles. The existence of cycles has
+%a profound impact:
+%• An RNN may develop a self-sustained temporal activation dynamics
+%along its recurrent connection pathways, even in the absence of input.
+%Mathematically, this renders an RNN a dynamical system, while feed-
+%forward networks are functions.
+%• If driven by an input signal, an RNN preserves in its internal state a
+%nonlinear transformation of the input history — in other words, it has
+%a dyna
+%
+%
+%
+%
+%% motivazione generale
+%In molti settori applicativi i dati trattati trovano una propria rappresentazione naturale in forma di grafi. Per citarne solo alcuni, si hanno esempi in questo senso nella Chimica \cite{Bianucci:ApplicationOfCascade,Micheli:AnalysisOfTheInternal,Bertinetto:EvaluationOfHierarchical}, nella Proteomica \cite{Baldi:ThePrincipledDesign}, nel trattamento e riconoscimento di immagini \cite{Frasconi:AGeneralFramework} o nell'Ingegneria del Software \cite{Frasconi:AGeneralFramework}. Estendere le metodologie per affrontare problemi definiti su domini strutturati, rappresenta quindi un modo per dare risposte efficaci a problemi esistenti, aprendo spazio per lo sviluppo di nuove applicazioni.
+%
+%% collocazione
+%L'ampliamento della gamma dei problemi trattabili è d'altra parte una delle ragioni d'essere del Machine Learning: laddove non risulti applicabile o efficace un approccio classico, algoritmico o analitico, l'Apprendimento Automatico si configura infatti come uno strumento utile per spostare la frontiera che delimita i problemi affrontabili. 
+%
+%Dei vari approcci possibili nel contesto del Machine Learning per il trattamento di domini strutturati, quello neurale in particolare ha subito una notevole sviluppo negli ultimi anni ed è ad oggi una frontiera della ricerca che non manca di mostrare criticità e margini di miglioramento. 
+%% cosa ci proponiamo di fare (generale)
+%\`E dunque questo l'ambito entro il quale si colloca quanto discusso nel seguito, con l'obiettivo di introdurre nuovi modelli neurali per l'apprendimento di funzioni su domini strutturati e dando risposta ad alcuni dei problemi caratteristici di questo specifico settore del Machine Learning.
+%
+%
+%% motivazione specifica (problemi che vogliamo affrontare)
+%% - costo computazionale
+%% - classe degli input trattabili
+%% - estensione del RC
+%Il lavoro svolto si concentra in particolare su due degli aspetti critici più rilevanti nel contesto dell'apprendimento su domini strutturati attraverso il paradigma neurale: il costo computazionale e la classe degli input trattabili.
+%
+%Il costo computazionale, elemento critico nei modelli neurali in generale, acquista un ruolo particolarmente determinante nel trattamento di domini complessi (e.g.\ sequenze, alberi o grafi): in una disciplina fortemente orientata alle applicazioni come il Machine Learning, il costo computazionale rappresenta infatti un vincolo tutt'altro che teorico sull'applicabilità dei modelli. 
+%Il secondo aspetto rappresenta invece un limite specifico delle Reti Neurali Ricorsive, adibite al trattamento dei domini strutturati, per le quali è talvolta necessario ricorrere ad assunzioni circa la struttura degli input (i.e. Grafi Diretti Aciclici) che riducono la gamma dei task affrontabili.
+%
+%
+%
+%% cosa ci proponiamo di fare (specifico)
+%% - reservoir computing (efficienza e grafi)
+%% - approccio costruttivo
+%% - output feedback
+%I modelli proposti attingono all'ambito del Reservoir Computing per 
+%
+%% argomento
+%In molti settori applicativi i dati trattati trovano una propria rappresentazione naturale in forma di grafi. Per citarne solo alcuni, si hanno esempi in questo senso nella Chimica \cite{Bianucci:ApplicationOfCascade,Micheli:AnalysisOfTheInternal,Bertinetto:EvaluationOfHierarchical}, nella Proteomica \cite{Baldi:ThePrincipledDesign}, nel trattamento e riconoscimento di immagini o nell'Ingegneria del Software \cite{Frasconi:AGeneralFramework}. Estendere le metodologie per affrontare problemi definiti su domini strutturati rappresenta quindi un modo per dare risposte efficaci a problemi esistenti, aprendo spazio per lo sviluppo di nuove applicazioni.\\
+%L'ampliamento della gamma dei problemi trattabili è d'altra parte una delle ragioni d'essere del Machine Learning: laddove non risulti applicabile o efficace un approccio classico, algoritmico o analitico, l'Apprendimento Automatico si configura infatti come uno strumento utile per spostare la frontiera che delimita i problemi affrontabili.\\
+%A questi due ambiti guarda quanto discusso nel seguito, proponendo nuovi modelli neurali che possano apprendere funzioni definite su domini strutturati. 
+%
+%
+%% scopo
+%Dei vari approcci possibili nel contesto del Machine Learning per il trattamento di domini strutturati, quello neurale ha subito una notevole evoluzione negli ultimi anni ed è ad oggi una frontiera della ricerca stimolante, che non manca di mostrare criticità e margini di miglioramento. 
+%Fra gli aspetti critici certamente più rilevanti è possibile individuarne due particolarmente importanti in relazione al lavoro svolto: il costo computazionale e la classe degli input trattabili.
+%Il costo computazionale, che si configura come un elemento critico nei modelli neurali in generale, acquista in effetti un ruolo particolarmente determinante nel trattamento di domini complessi (e.g.\ sequenze, alberi o grafi): in una disciplina fortemente orientata alle applicazioni come il Machine Learning, il costo computazionale rappresenta infatti un vincolo tutt'altro che teorico sull'applicabilità dei modelli. 
+%Il secondo aspetto rappresenta invece un limite specifico delle Reti Neurali Ricorsive, adibite al trattamento dei domini strutturati, per le quali è talvolta necessario ricorrere ad assunzioni circa la struttura degli input (i.e.\ Grafi Diretti Aciclici) che riducono la gamma dei task affrontabili (si veda il paragrafo~\ref{sec:intro:struct}).
+%Con i modelli proposti si è dunque cercato di ricondurre la soluzione di entrambi i problemi ad un'unica strategia che permettesse di apprendere, con buone performance e ad un costo computazionale vantaggioso, funzioni su un dominio di input che comprendesse i grafi non diretti ed i grafi ciclici.
+%
+%% risultati raggiunti
+%La soluzione individuata consiste nell'introduzione dell'approccio costruttivo (paragrafo~\ref{sec:intro:cnn}) nell'ambito del paradigma emergente del Reservoir Computing (paragrafo~\ref{sec:intro:rc}), applicato al trattamento di domini strutturati (paragrafo~\ref{sec:intro:struct}). Ne risulta una strategia efficiente e flessibile che ha permesso la formulazione di tre nuovi modelli di reti neurali ricorsive (capitolo~\ref{ch:modelli}). L'aver intrapreso un percorso di integrazione fra due mondi ad oggi separati, quello delle Reti Neurali Costruttive e quello del Reservoir Computing, ha inoltre permesso di mettere in luce caratteristiche originali dei modelli proposti, come l'introduzione di un meccanismo stabile di output-feedback (paragrafo~\ref{sec:modelli:constr:outfeedback}).
+%
+%Le capacità dei modelli proposti sono state discusse e testate in maniera rigorosa su task di Chemioinformatica relativi a dataset reali noti in letteratura (capitolo~\ref{ch:esperimenti}), evidenziando come l'approccio proposto permetta in molti casi di migliorare le performance raggiunte tramite l'applicazione di modelli non costruttivi. Parte dei risultati riportati nel seguito è inoltre discussa nell'articolo scientifico \textit{Constructive Reservoir Computation with Output Feedbacks for Structured Domains}, inviato all'European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning\footnote{\url{http://www.dice.ucl.ac.be/esann/}} ed attualmente in fase di revisione.
+%
+%\end{comment}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+%\begin{comment}
+%Traditionally, data relationships exploitation has been the sub-
+%ject of many studies in the community of inductive logic pro-
+%gramming and, recently, this research theme has been evolving
+%in different directions [8], also because of the applications of
+%relevant concepts in statistics and neural networks to such areas
+%
+%
+%
+%extending the methodolo-
+%gies in order to deal with classes of data structures can be recog-
+%nized as one of the most promising ways of increasing the possi-
+%bility of successful new applications
+%
+%
+%La tesi introduce e discute nuovi modelli di reti neurali ricorsive in
+%ambito Reservoir Computing caratterizzati da un approccio costruttivo.
+%L'analisi sperimentale riguarda l'apprendimento  di trasduzioni su
+%domini strutturati da dataset reali.
+%
+%\TODO{Introduzione corposa alla tesi: argomento, scopo, risultati raggiunti, spiegazione di come sono suddivisi i capitoli della tesi.}
+%
+%\begin{itemize}
+%\item (argomento, scopo, risultati raggiunti, contenuti)
+%\item Il Machine Learning
+%\item Trattare domini strutturati
+%\item Importanza di un approccio efficiente
+%\item Cosa è stato fatto, come è stato fatto, come è stato testato. 
+%\item Descrizione dettagliata dei contenuti
+%\item Dire che si dà per scontata una conoscenza almeno di base degli strumenti, della terminologia ecc. del ML.
+%\end{itemize}
+%
+%
+%\end{comment}

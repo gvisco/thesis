@@ -1,0 +1,255 @@
+Consideriamo una rete (FOF) formata da 'd' sotto-reti. Tutti i reservoir hanno
+dimensione Nr, sia le sotto-reti che il readout-globale hanno output Ny, che
+però è trascurabile.
+
+
+[CLAUDIO]: SPIEGA PERCHE' E' TRASCURABILE N_Y
+
+--------------------------------------------------------------------------------
+
+*** Convergenza del reservoir ***
+
+La rete i-esima
+
+    x_t(v) = f(Win u(v) + \sum_{w} W x_{t-1}(w) + Wfof z(g))
+
+
+con:
+    Win     :   (Nr, Nu)
+    W       :   (Nr, Nr)
+    Wfof    :   (Nr, Ny * (i-1))
+
+Per un grafo g:
+    Win u(v)                :   O(Nr Nu |V(g)|) - calcolato una sola volta
+    Wfof z(g)               :   O(Nr Ny (i+1))  - calcolato una volta sola
+    \sum_{w} W x_{t-1}(w)   :   O(Nr^2 |V(g)|)  - ad ogni iterazione
+
+Chiamiamo 'j' il numero massimo di iterazioni e 'v' il numero massimo di 
+vertici.
+
+[CLAUDIO]: come detto, meglio cambiare notazione per v, j e d
+
+Il calcolo viene ripetuto per ogni grafo, quindi |G| volte.
+La convergenza del reservoir i-esimo sull'intero grafo quindi costa:
+
+    O(|G| (Nr Nu v + Nr Ny (i-1) + Nr^2 v j))
+    ~ O(|G| Nr^2 v j)
+
+gli output-feedback risultano trascurabili: quello che pesa è il processo 
+iterativo del reservoir.
+
+[CLAUDIO]: sotto quale condizione? nota che stai usando l'assuzione che i reservoir siano pienamente connessi
+e questa assunzione in ambito RC non e' PER NIENTE scontata. anzi uno dei vantaggi principali a livello computazionale
+e' proprio dato dalla sparsita' di W che ti permette di usare anche reti grosse con costo non eccessivo.
+
+Il costo della convergenza di *tutte* le sotto-reti è dunque 'd' volte quello
+di una singola sotto-rete:
+
+    O(d |G| Nr^2 v j)
+
+[CLAUDIO]:come su, fai attenzione al costo che non dipende per forza quadraticamente dalla dimensione del reservoir.
+di' almeno che in generale, assumendo l'assunzione di sparsita' etc etc come standard RC, il costo diventa
+...
+che scala linearmente con la dimensione del reservoir e dell'input.
+Come annotato nel pdf, ci stanno bene anche dei commenti sull'efficienza dell'encoding
+qui, con possibile brevissimo confronto con i modelli allo stato dell'arte in letteratura
+con i quali e' maggiormente interessante uin confronto e.g. modellistico o cmq sperimentale
+(RecNN + kernels). puoi prendere spunto dai nostri papers.
+
+
+--------------------------------------------------------------------------------
+
+*** Training (sotto-rete) ***
+
+[CLAUDIO]: direi che maxS non si e' usata quindi puoi rimuovere questa parte:
+
+** Con Max-S
+Per ogni iterazione (rete i-esima):
+    Calcolo dell'output                         :   O(|G| (Nr + Ny (i-1)) Ny)
+    Calcolo correlazione                        :   O(|G| Ny)
+    Calcolo \sigma_o (E_po - \bar{E}_o) f'_p    :   O(|G| Ny)
+    Calcolo gradiente                           :   O(|G| (Nr + Ny (i-1)) Ny) 
+
+Mettendo tutto insieme, un'iterazione costa:
+
+    O(|G| Ny (2 + (Nr + Ny (i-1))))
+    ~ O(|G| Ny Nr + |G| i Ny^2)
+
+Chiamiamo 'q' il numero massimo di iterazioni necessarie alla convergenza.
+Il costo complessivo per l'applicazione dell'algoritmo a *tutte* le sotto-reti è
+
+    O(q d |G| Ny Nr + q |G| Ny^2 d^2)
+    ~ O(q d |G| Nr + q |G| d^2)         [Ny trascurabile]
+
+[CLAUDIO]: -----------------------------------------------------------------------
+
+** Con Ridge-Regression
+
+    W.T = (A.T A + \lambda I)^-1 A.T B
+
+con 
+
+    A   :   (|G|, Nr + Ny (i-1)) = (|G|, Nf) 
+    B   :   (|G|, Ny)
+
+[CLAUDIO]: attento alla notazione anche qui. al posto di lambda forse dovresti usare un altro simbolo
+oppure un pedice a lambda (quello che hai usato per descrivere gli esperimenti).
+Inoltre, specifica cosa e' A e cosa e' B (altrimenti un lettore non ti segue)
+
+
+ho chiamato Nf = Nr + Ny (i-1) il numero di features in input al readout. E'
+solo per comodità (n.b. Nf varia a sotto-rete a sotto-rete).
+
+Costo:
+    A.T A                           :   O(Nf^2 |G|)     [prodotto]
+    (A.T A + \lambda I)^-1          :   O(Nf^3)         [inversione]
+    A.T B                           :   O(Nf |G| Ny)    [prodotto]
+    (A.T A + \lambda I)^-1 A.T B    :   O(Nf^2 Ny)      [prodotto]
+
+Mettendo tutto insieme:
+
+    O(Nf^3 + Nf^2 |G| + Nf^2 Ny + Nf |G| Ny)
+    ~ O(Nf^3 + Nf^2 |G| + Nf^2 + Nf |G|)        [Ny trascurabile]
+    ~ O(Nf^3 + Nf^2 |G|)
+
+Cechiamo di calcolare il costo per tutta la rete, ovvero per 'd' sotto-reti.
+Quanto vale Nf? Per l'unità i-esima: Nf = Nr + Ny (i-1)
+
+[CLAUDIO]: sottorete, non unita'???
+
+Quindi:
+
+Nf_1 = Nr
+Nf_2 = Nr + Ny
+Nf_3 = Nr + 2 Ny
+Nf_4 = Nr + 3 Ny
+...
+Nf_d = Nr + (d-1) Ny
+
+Quindi:
+
+(Nf_1)^2 = Nr^2
+(Nf_2)^2 = Nr^2 + Ny^2 + 2 Nr Ny
+(Nf_3)^2 = Nr^2 + 4 Ny^2 + 4 Nr Ny
+(Nf_3)^2 = Nr^2 + 9 Ny^2 + 6 Nr Ny
+...
+(Nf_d)^2 = Nr^2 + (d-1)^2 Ny^2 + 2 (d-1) Nr Ny
+
+sommando: O(d Nr^2 + Ny^2 d^3  + Nr Ny d^2) 
+            ~ O(d^3 + d^2 Nr + d Nr^2)      [Ny trascurabile]
+
+Passiamo al cubo:
+
+(Nf_1)^3 = Nr^3
+(Nf_2)^3 = Nr^3 + Ny^3 + 3 Nr^2 Ny + 3 Nr Ny^2
+(Nf_3)^3 = Nr^3 + 8 Ny^3 + 6 Nr^2 Ny + 12 Nr Ny^2
+(Nf_3)^3 = Nr^3 + 27 Ny^3 + 9 Nr^2 Ny + 27 Nr Ny^2
+...
+(Nf_d)^3 = Nr^3 + (d-1)^3 Ny^3 + 3 (d-1) Nr^2 Ny + 3 (d-1)^2 Nr Ny^2
+
+sommando: O(d Nr^3 + Ny^3 d^4 + Nr^2 Ny d^2 + Nr Ny^2 d^3)
+            ~ O(d^4 + Nr d^3 + Nr^2 d^2 + Nr^3 d)       [Ny trascurabile]
+
+Mettendo tutto insieme, il costo del training di tutte le sotto-reti tramite
+ridge-regression è
+
+    O(d^4 + Nr d^3 + Nr^2 d^2 + Nr^3 d + d^3 |G| + d^2 Nr |G| + d Nr^2 |G|)
+
+[CLAUDIO]: solo suggerimento il calcolo di Nf^2 e Nf^3 nei vari casi fallo vedere come somamtoria.
+
+
+--------------------------------------------------------------------------------
+
+*** Training (readout-globale) ***
+
+** Con Ridge-Regression
+
+Come il caso precedente, ma senza alcun reservoir (i.e. solo gli output-feedback
+in input)
+
+    O(Nf^3 + Nf^2 |G|) con Nf = Ny (i-1) per la sotto-rete i-esima
+
+Quindi:
+
+    O(Ny^3 d^4 + Ny^2 d^3 |G|)
+    ~ O(d^4 + d^3 |G|)          [Ny trascurabile]
+
+
+** Con LMS
+
+Per un singolo allenamento, dopo aver aggiunto la sotto-rete i-esima:
+
+    O(|G| Nf Ny) = O(r |G| (i-1) Ny^2)
+
+con 'r' numero massimo di iterazioni per la convergenza.
+
+
+[CLAUDIO]: anche qui, magri usa una notazione piu' espressiva di 'r'.
+
+Complessivamente il costo è:
+
+    O(r |G| d^2 Ny^2)
+    ~ O(r |G| d^2)    [Ny trascurabile]
+
+
+--------------------------------------------------------------------------------
+
+*** Calcolo dell'output (sotto-rete) ***
+
+Tutti i valori in input sono precalcolati (reservoir + output-feedback).
+Il costo è quello della moltiplicazione:
+
+    Wout [X(x(g)), z_1(g), ... , z_{i-1}(g)] = Wout in
+
+con:
+    Wout    :   (Ny, Nr + Ny (i-1))
+    in      :   Nr + Ny (i-1)
+
+Quindi per una rete ed un input:
+
+    O(Ny (Nr + Ny (i-1)))
+    = O(Ny Nr + Ny^2 (i-1))
+
+Il costo del calcolo dell'output di *tutte* le 'd' sotto-reti è dunque:
+
+    O(|G| ((Ny Nr) + (Ny Nr + Ny^2) + (Ny Nr + 2 Ny^2) + ... + (Ny Nr + (d-1) Ny^2))))
+    = O(|G| (d Ny Nr + Ny^2 d^2))
+    ~ O(d Nr |G| + d^2 |G|)         [Ny trascurabile]
+
+
+--------------------------------------------------------------------------------
+
+*** Calcolo dell'output (readout globale) ***
+
+Differisce dal caso precedente solo perché ha in input unicamente gli 
+output-feedback, quindi nessun reservoir.
+
+    O(Ny^2 d^2 |G|)
+    ~ O(d^2 |G|)
+
+
+********************************************************************************
+********************************************************************************
+
+*** Confronto: Costruttivo VS Standard ***
+
+** GraphESN Costruttiva
+
+reservoir:          O(d |G| Nr^2 v j)
+sub learning:       O(d^4 + Nr d^3 + Nr^2 d^2 + Nr^3 d + d^3 |G| + d^2 Nr |G| + d Nr^2 |G|) 
+gloabl learning:    O(d^4 + d^3 |G|) 
+sub output:         O(d Nr |G| + d^2 |G|) 
+global output:      O(d^2 |G|) 
+
+** GraphESN Stadard
+
+[CLAUDIO]: specifica le assunzioni.
+ne stai facendo almeno due importanti:
+1. reservoir pienamente connessi
+2. dimensione del reservoir in GraphESN standard = Nr x j
+
+reservoir:          O(d |G| Nr^2 v j)
+learning:           O(Nr^3 + Nr^2 |G|)
+output:             O(|G| Nr)
+
+[CLAUDIO]: quindi da qui fai vedere quando e' conveniente GraphESN-FOF rispetto a GraphESN standard.

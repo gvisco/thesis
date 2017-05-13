@@ -1,0 +1,79 @@
+--------------------------------------------------------------------------------
+INDICE
+
+- Manca una parte generale di introduzione (seppur breve) al machine
+learning, reti neurali e ad esempio
+tecniche di validazione che fanno parte del background
+
+L'idea non mi piace affatto, ma si può fare per non scontentare nessuno.
+N.B. Nell'introduzione c'è comunque una parte in cui si dice che si assumono 
+conoscenze di base del ML.
+
+-----------------------
+
+- Sezione Software meglio alla fine dei Modelli (eventalmente rimandando ad 
+un'appendice per dettagli)
+
+Sono dell'idea che il software stia bene nella parte sperimentale. Non è
+qualcosa che abbia a che fare direttamente con i modelli quanto con la loro
+implementazione, in maniera del tutto funzionale agli esperimenti.
+
+-----------------------
+
+- Al posto di "Background" come titolo della sezione puoi usare (se
+preferisci coem ci hai chiesto): (rassegna dello) stato dell'arte
+
+Non so
+
+-----------------------
+
+- L'algoritmo di base costruttivo potrebbe essere anticipato come schema
+generale, in base a come e' scritta l'Introduzione al capitolo Modelli
+
+Ho spiegato perché è nei modelli. Mi è stato risposto: "vedremo".
+
+--------------------------------------------------------------------------------
+GENERALI
+
+- non esagerare con le footnote. Troppe footnote peggiorano la
+leggibilita' della tesi.
+
+Ok, riguardare. Qualcosa ho già levato.
+
+-----------------------
+
+- e' utile una introduzione alle Reti Neurali Ricorrenti, anche breve,
+prima di RC, con introduzione ai concetti di feedback, memoria, etc.
+
+Al solito, la cosa non mi piace granché ma si può fare.
+
+
+--------------------------------------------------------------------------------
+
+
+NOTE
+
+pag.2a:     [DONE] Corretto in memoizing. Claudio suggerisce una nota, ma non sono particolarmente d'accordo.
+pag.2b:     [DONE] 
+pag.2c:     [DONE] Molto brevemente.
+pag.2d:     [DONE] 
+pag.3:      [DONE] Modificato il testo, non la formula
+pag.4a:     [DONE] Ne ho aggiunto solo uno, ma potrei metterne un sacco. Boh.
+pag.4b:     [DONE] 
+pag.4c:     [DONE] 
+pag.6a:     [DONE]
+pag.6b:     [DONE] Brevemente.
+pag.7:      [DONE] Messo in maiuscolo tutti i markovian@.
+pag.8a:     [DONE] Rimosso il discorso. Era poco utile se non fuorviante e costava spiegarlo.
+pag.8b:         [????] Non so, il discorso è fatto più volte (intro, modelli, conclusioni). Può bastare?
+pag.8c:     [DONE] Speriamo vada bene.
+pag.9a:     [DONE] Nella figura ho messo "Unfolded Reservoir"
+pag.9b:     [DONE] Ho aggiunto un paragrafo prima di GraphESN. 
+pag.10a:    [DONE] 
+pag.10b:    [DONE] Rimossa la nota.
+pag.11a:    [DONE]
+pag.11b:    [DONE]
+pag.12a:    [DONE]
+pag.12b:    [DONE] Ho messo la figura in fondo ed aggiunto una descrizione.
+pag.12c:    [DONE]
+

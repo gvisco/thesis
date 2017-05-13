@@ -1,0 +1,105 @@
+%%%% Package e simili %%%%
+
+% Migliora la gestione dei font (con PDFLaTeX)
+\usepackage{microtype}
+
+% Rientro anche nel primo capoverrso, secondo la consuetudine italiana
+\usepackage{indentfirst}
+
+% Comando \vref
+\usepackage[italian]{varioref}
+
+% vari opzioni per gli ambienti enumerate
+\usepackage{enumerate}
+
+% tabelle e didascalie
+\usepackage{booktabs}
+\usepackage[font=small,format=hang,labelfont={bf}]{caption}
+\usepackage{subfig} % sotto-figure e sotto-tabelle
+
+% celle multiriga nelle tabelle
+\usepackage{multirow}
+
+% Font migliori per \mathbb
+\usepackage{bbm} 
+
+% pseudo-codice
+\usepackage{algorithmic} 
+\usepackage{algorithm}
+\floatname{algorithm}{Algoritmo}
+\renewcommand{\algorithmiccomment}[1]{//#1} %commenti con //
+
+% principalmente per l'ambiente comment
+\usepackage{verbatim}
+
+% tabelle colorate
+\usepackage{colortbl}
+
+\usepackage{array}
+\usepackage{tabularx}
+
+
+%%%% Teoremi e cose simili %%%%
+
+\newtheorem{theorem}{Teorema}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposizione}
+\newtheorem{corollary}{Corollario}
+\newtheorem{definition}{Definizione}
+
+
+
+%%%% Un po' di cose utili per le formule %%%%
+
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert} %valore assoluto
+
+% trasposta di una matrice o un vettore
+\newcommand{\transpose}[1]{\ensuremath{#1^{\mathrm{T}}}} 
+% vettore (in bold)
+\newcommand{\vect}[1]{\ensuremath{\mathbf{#1}}}
+% matrice (maiuscola in bold)
+\newcommand{\matr}[1]{\ensuremath{\mathbf{\uppercase{#1}}}} 
+% norma vettoriale
+\DeclarePairedDelimiter{\vectnorm}{\lVert}{\rVert}
+% 'e' di Nepero
+\providecommand*{\eu}{\ensuremath{\mathrm{e}}}
+% grafi (in bold)
+\newcommand{\graph}[1]{\ensuremath{\mathbf{#1}}}
+% insiemi numerici
+\newcommand{\numberset}{\mathbb}
+\newcommand{\N}{\numberset{N}}
+\newcommand{\R}{\numberset{R}}
+% definizione di insiemi
+\newcommand{\setdef}[2]{\lbrace #1 \vert\ #2 \rbrace}
+
+% forza la disposizione degli oggetti mobili al termine di una sezione
+% Utile per le appendici con molte tabelle
+\usepackage[section]{placeins}
+
+% ambiente per l'introduzione dei singoli capitoli, peppe's style
+\newenvironment{intro}{\sffamily}{\vspace*{2ex minus 1.5ex}}
+
+%%%% Altro %%%%
+
+% note a margine in rosso
+\newcommand{\mnote}[1]{\marginpar{\tiny {\color{red}#1}}}
+
+% comando TODO
+\newcommand{\TODO}[1]{\begin{center}\scshape \color{red} TODO (#1)\end{center}}
+\newcommand{\iTODO}[1]{\scshape \color{red} TODO (#1)} % inline TODO
+
+%%%% Link e compagnia bella %%%%
+
+% url e link
+\usepackage{hyperref}
+\hypersetup{colorlinks,
+            citecolor=black,
+            filecolor=black,
+            linkcolor=black,
+            urlcolor=black,
+            pdfauthor={Giulio Visco},
+			pdftitle={Modelli neurali costruttivi di tipo Reservoir Computing per domini strutturati}
+}
+\usepackage{bookmark}
+\usepackage{url}

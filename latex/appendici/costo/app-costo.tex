@@ -1,0 +1,281 @@
+\chapter{Dettaglio del costo computazionale}\label{app:costo}
+\newcommand{\NSN}{\mathit{NSN}}
+\newcommand{\MAXV}{\mathit{MAXV}}
+\newcommand{\MAXIT}{\mathit{MAXIT}}
+\newcommand{\Nr}{\ensuremath{N_R}}
+\newcommand{\Ny}{\ensuremath{N_Y}}
+\newcommand{\Nz}{\ensuremath{N_Z}}
+\newcommand{\Nu}{\ensuremath{N_U}}
+\newcommand{\Nf}{\ensuremath{N_F}}
+\newcommand{\G}{\ensuremath{\abs{\mathcal{G}}}}
+Consideriamo una rete di tipo GraphESN-FOF formata da $\NSN$ sotto-reti con reservoir completamente connessi di dimensione $\Nr$.
+Indichiamo con $\Nz$ la dimensione dell'output delle sotto-reti e con $\Ny$ quella del readout globale, entrambe trascurabili visto che tipicamente $\Ny = \Nz = 1$. Sia $\Nu$ la dimensione delle etichette associate ad ogni vertice dell'input e $\G$ la dimensione del dataset (i.e il numero totale di input). 
+
+Di seguito, nei paragrafi~\ref{app:costo:encoding}-\ref{app:costo:out_globale} viene riportato il calcolo del costo computazionale relativo alle varie fasi di utilizzo del modello: encoding dei dati, allenamento delle sotto-reti, allenamento del readout-globale, calcolo dell'output.
+
+Il paragrafo~\ref{app:costo:modelselection} riporta invece il calcolo del costo computazionale per la model selection di una GraphESN standard.
+
+
+%%%%%%%%%%%%%%%%%%%%
+\section{Encoding dei dati}\label{app:costo:encoding}
+Consideriamo un singolo passo del processo di encoding nella rete $i$-esima. 
+\begin{equation}
+	\vect{x}^{(i)}_t(v) = f( 
+	\matr{W}^{(i)}_\textup{in} \, \vect{u}(v) + 
+	\sum_{w \in \mathcal{N}(v)} \hat{\matr{W}}^{(i)} \, \vect{x}^{(i)}_{t-1}(w) +
+	\sum_{j=1}^{i-1} \matr{W}^{(ij)}_\textup{fof} \, \vect{z}^{(j)}(v)
+	)
+\end{equation}
+con $\matr{W}^{(i)}_\textup{in} \in \R^{\Nr \times \Nu}$, $\hat{\matr{W}}^{(i)} \in \R^{\Nr \times \Nr}$, $\matr{W}^{(ij)}_\textup{fof} \in \R^{\Nr \times \Nz}$.
+
+Indicando con $\MAXV$ il numero massimo di vertici di un grafo di input, il costo per l'encoding di un grafo $\graph{g}$ è dato dalla somma dei costi:
+\begin{itemize}
+\item $\matr{W}^{(i)}_\textup{in} \, \vect{u}(v)$, ha costo $O(\Nr\ \Nu)$ e viene calcolato una sola volta per ogni vertice del'input.
+\item $\sum_{j=1}^{i-1} \matr{W}^{(ij)}_\textup{fof} \, \vect{z}^{(j)}(v)$, ha costo $O(\Nr\ \Ny\ (i-1))$ e viene calcolato una sola volta per ogni vertice dell'input.
+\item $\sum_{w \in \mathcal{N}(v)} \hat{\matr{W}}^{(i)} \, \vect{x}^{(i)}_{t-1}(w)$, ha costo $O(\Nr^2)$ e viene calcolato per ogni vertice ad ogni iterazione.
+\end{itemize}
+Chiamando $\MAXIT$ il numero massimo di iterazioni, il costo dell'encoding di un singolo grafo è dunque  dato da
+\begin{equation}
+O(\Nr\ \Nu\ \MAXV + \Nr\ \Ny\ (i-1)\ \MAXV + \Nr^2\ \MAXV\ \MAXIT))
+\end{equation}
+che, ripetuto per $\G$ volte, ovvero per ogni grafo nel dataset, è
+\begin{equation}
+\begin{array}{l}
+O(\G\ (\Nr\ \Nu\ \MAXV + \Nr\ \Ny\ (i-1)\ \MAXV + \Nr^2\ \MAXV\ \MAXIT)) \\
+\simeq O(\G\ \Nr^2\ \MAXV\ \MAXIT)
+\end{array}
+\end{equation}
+che scala quadraticamente con la dimensione del reservoir, rendendo trascurabile la presenza delle connessioni di output-feedback.
+
+Per l'intera rete, ovvero considerando tutte le $\NSN$ sottoreti, il costo complessivo del processo di encoding è dato da
+\begin{equation}
+O(\NSN\ \G\ \Nr^2\ \MAXV\ \MAXIT)
+\end{equation}
+e scala linearmente con la dimensione del dataset e dei grafi e quadraticamente con la dimensione del reservoir.
+
+Considerando l'uso di reservoir sparsi, con al più $M$ connessioni in ingresso ad ogni unità, il costo computazionale dell'encoding può essere ulteriormente ridotto a 
+\begin{equation}
+O(\NSN\ \G\ \Nr\ M\ \MAXV\ \MAXIT)
+\end{equation}
+che dipende linearmente dalla dimensione del reservoir e da $M$.
+
+%%%%%%%%%%%%%%%%%
+\section{Training delle sotto-reti}\label{app:costo:tr_sub}
+Consideriamo il caso in cui la rete i-esima sia allenata tramite Ridge Regression. In formula:
+\begin{equation}\label{app:costo:ridgeregr}
+\transpose{\matr{W}_\textup{out}} = (\matr{X}^T \matr{X} + \lambda_\textup{r} \matr{I})^{-1} \matr{X}^T \matr{Y}_\textup{target}
+\end{equation}
+con $\matr{X} \in \R^{\G \times (\Nr + \Nz (i-1))}$ matrice che contiene tutti gli input del readout (i.e. per ogni grafo, la codifica ottenuta dal sotto-reservoir più gli output-feedback provenienti dalle sotto-reti precedenti), $\matr{Y}_\textup{target} \in \R^{\G \times \Ny}$ contenente i valori target (i.e. un vettore di uscita per ogni input) e $\matr{I} \in \R^{(\Nr + \Nz (i-1)) \times (\Nr + \Nz (i-1))}$ matrice identità.
+
+Chiamiamo per semplicità $\Nf(i) = \Nr + \Nz\, (i-1)$, ad indicare il numero di \emph{features} in input al readout $i$-esimo.
+I singoli passaggi nel calcolo della Ridge Regression hanno il seguente costo:
+\begin{itemize}
+\item $\matr{X}^T \matr{X}$, prodotto di matrici: $O(\Nf(i)^2\ \G)$.
+\item $(\matr{X}^T \matr{X} + \lambda_\textup{r} \matr{I})^{-1}$, inversione: $O(\Nf(i)^3)$.
+\item $\matr{X}^T \matr{Y}_\textup{target}$, prodotto di matrici: $O(\Nf(i)\ \G\ \Nz)$.
+\item $(\matr{X}^T \matr{X} + \lambda_\textup{r} \matr{I})^{-1} \matr{X}^T \matr{Y}_\textup{target}$, prodotto di matrici: $O(\Nf(i)^2 \Nz)$.
+\end{itemize}
+Il costo complessivo per l'allenamento della sotto-rete $i$-esima è quindi dato da:
+\begin{equation}
+\begin{array}{l}
+O(\Nf(i)^3 + \Nf(i)^2\ \G + \Nf(i)^2 \Nz + \Nf(i)\ \G\ \Nz) \\
+\simeq O(\Nf(i)^3 + \Nf(i)^2\ \G + \Nf(i)^2 + \Nf(i)\ \G\ ) \\
+\simeq O(\Nf(i)^3 + \Nf(i)^2\ \G ) \\
+\end{array}
+\end{equation}
+
+Nel passaggio da una singola sotto-rete alla rete nel suo complesso bisogna tener conto del fatto che $\Nf$ è funzione di $i$ (i.e.$\Nf(i) = \Nr + \Nz\, (i-1)$).
+Il costo dell'allenamento di $\NSN$ sotto-reti è quindi dato da
+\begin{equation}\label{app:costo:ridge}
+\begin{array}{l}
+O(\sum_{i=1}^{\NSN} (\Nf(i)^3 + \Nf(i)^2\ \G)) \\
+= O(\sum_{i=1}^{\NSN} \Nf(i)^3 + \sum_{i=1}^{\NSN} \Nf(i)^2\ \G) \\
+\end{array}
+\end{equation}
+Per semplicità, consideriamo le due sommatorie separatamente.
+\begin{equation}\label{app:costo:ridge1}
+\begin{array}{l}
+\displaystyle O(\sum_{i=1}^{\NSN} \Nf(i)^3) = O(\sum_{i=1}^{\NSN} (\Nr + \Nz (i-1))^3) \\
+\displaystyle = O(\sum_{i=1}^{\NSN} (\Nr^3 + 3 \Nr^2\ \Nz\ (i-1) + \Nz^3\ (i-1)^3 + 3 \Nr\ \Nz^2\ (i-1)^2)\\
+\displaystyle = O(\NSN\ \Nr^3 + 3 \Nr^2\ \Nz \sum_{i=1}^{\NSN} (i-1) + \Nz^3 \sum_{i=1}^{\NSN} (i-1)^3 + 3 \Nr\ \Nz^2 \sum_{i=1}^{\NSN} (i-1)^2 )\\
+\displaystyle \simeq O(\NSN\ \Nr^3 + \Nr^2\ \sum_{i=1}^{\NSN} (i-1) + \sum_{i=1}^{\NSN} (i-1)^3 + \Nr\ \sum_{i=1}^{\NSN} (i-1)^2 )\\
+\displaystyle \simeq O(\NSN\ \Nr^3 + \Nr^2\ \NSN^2 + \NSN^4 + \Nr\ \NSN^3 )\\
+\end{array}
+\end{equation}
+la seconda parte dell'equazione (\ref{app:costo:ridge}) è invece data da
+\begin{equation}\label{app:costo:ridge2}
+\begin{array}{l}
+\displaystyle O(\sum_{i=1}^{\NSN} \Nf(i)^2\ \G)\\
+\displaystyle = O(\G  \sum_{i=1}^{\NSN} (\Nr + \Nz\ (i-1))^2) \\
+\displaystyle = O(\G  \sum_{i=1}^{\NSN} (\Nr^2 + 2 \Nr\ \Nz\ (i-1) + \Nz^2 (i-1)^2)) \\
+\displaystyle = O(\G  (\NSN\ \Nr^2 + 2\Nr\ \Nz \sum_{i=1}^{\NSN}(i-1) + \Nz^2 \sum_{i=1}^{\NSN}(i-1)^2)\\
+\displaystyle \simeq O(\G (\NSN\ \Nr^2 + \Nr\ \NSN^2 + \NSN^3)) \\
+\displaystyle = O(\NSN\ \Nr^2\ \G + \Nr\ \NSN^2\ \G + \NSN^3\ \G) \\
+\end{array}
+\end{equation}
+
+Mettendo insieme le equazioni (\ref{app:costo:ridge1}) e (\ref{app:costo:ridge2}) si ottiene il costo complessivo dell'allenamento delle sotto-reti tramite Ridge Regression:
+\begin{multline}
+O(\NSN^4 + \Nr\ \NSN^3 + \Nr^2\ \NSN^2 + \NSN\ \Nr^3 \\
++ \NSN^3\ \G + \NSN^2\ \Nr\ \G + \NSN\ \Nr^2\ \G)
+\end{multline}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Training del readout globale}
+Consideriamo due possibili casi di allenamento per il readout globale: l'applicazione dell'algoritmo diretto di Ridge Regression o l'impiego dell'algoritmo iterativo LMS.
+
+
+\subsection{Ridge Regression}\label{app:costo:tr_globale_ridge}
+Nel caso in cui il readout globale sia allenato tramite Ridge Regresison, la formula ricalca quella riportata nell'equazione (\ref{app:costo:ridgeregr}), in cui però la dimensione degli input è data solo dagli output delle sotto-reti (i.e. senza alcun input proveniente da un reservoir), quindi $\matr{X} \in \R^{\G \times \Nz\, (i-1)}$.\\
+Chiamando $\Nf(i) = \Nz\, (i-1)$, il costo computazionale per l'allenamento della rete al passo $i$-esimo è dato da
+\begin{equation}
+O(\Nf(i)^3 + \Nf(i)^2\ \G)
+\end{equation}
+Il costo complessivo dell'allenamento del readout globale è quindi:
+\begin{equation}
+\begin{array}{l}
+\displaystyle O(\Nf(i)^3 + \Nf(i)^2\ \G) \\
+\displaystyle = O(\sum_{i=1}^{\NSN} (\Nz^3\ (i-1)^3 + (\Nz^2\ (i-1)^2\ \G) \\
+\displaystyle = O(\Nz^3\ \sum_{i=1}^{\NSN}(i-1)^3 + \Nz^2\ \G\ \sum_{i=1}^{\NSN}(i-1)^2) \\
+\displaystyle \simeq O(\NSN^4 + \NSN^3 \G)\\
+\end{array}
+\end{equation}
+
+\subsection{LMS}\label{app:costo:tr_globale_lms}
+In questo caso l'algoritmo è iterativo. Chiamiamo $\MAXIT$ il numero massimo di iterazioni necessarie perché l'algoritmo converga.
+L'allenamento del readout globale, dopo aver aggiunto $i$ sotto-reti, è dato da
+\begin{equation}
+O(\MAXIT\ \G\ (i-1)\ \Ny^2)
+\end{equation}
+
+Complessivamente, il costo necessario all'allenamento del readout globale della rete tramite LMS è quindi
+\begin{equation}
+\begin{array}{l}
+\displaystyle O(\sum_{i=1}^{\NSN} (\MAXIT\ \G\ (i-1)\ \Ny^2)) \\
+\displaystyle = O(\MAXIT\ \Ny^2\ \G\ \sum_{i=1}^{\NSN} (i-1)) \\
+\displaystyle \simeq O(\MAXIT\ \Ny^2\ \G\ \NSN^2) \\
+\displaystyle \simeq O(\MAXIT\ \G\ \NSN^2) \\
+\end{array}
+\end{equation}
+
+
+%%%%%%%%%
+\section{Calcolo dell'output delle sotto-reti}\label{app:costo:out_sub}
+Per il calcolo dell'output tutti i valori di input --- sia provenienti dal reservoir che gli output-feedback --- sono calcolati in precedenza. Il calcolo dell'uscita della rete $i$-esima per il grafo $\graph{g}$ corrisponde dunque alla moltiplicazione
+\begin{equation}\label{app:eq:ro:sub}
+\matr{W}^{(i)}_\textup{out} \,
+		[\mathcal{X}(\vect{x}^{(i)}(\graph{g})), \vect{z}^{(1)}(\graph{g}), \dots, \vect{z}^{(i-1)}(\graph{g})]
+\equiv \matr{W}^{(i)}_\textup{out} \, \vect{v}_\textup{feat} 
+\end{equation}
+con $\matr{W}^{(i)}_\textup{out} \in \R^{\Nz \times (\Nr + \Nz\, (i-1))}$ ed il vettore  $\vect{v}_\textup{f} \in \R^{\Nr + \Nz\, (i-1)}$ ad indicare la concatenazione delle features in input al readout (i.e. encoding del reservoir più output-feedback).
+
+Il costo per il calcolo dell'uscita della sotto-rete $i$-esima per tutti i grafi del dataset è dunque
+\begin{equation}
+\begin{array}{l}
+O(\G\ \Nz (\Nr + \Nz\, (i-1)) \\
+= O(\G\ \Nz\ \Nr + \G\ \Nz^2, (i-1)) \\
+\end{array}
+\end{equation}
+Considerando tutte le $\NSN$ sotto-reti, si ottiene il costo complessivo:
+\begin{equation}
+\begin{array}{l}
+\displaystyle O(\sum_{i=1}^{\NSN} (\G\ \Nz\ \Nr + \G\ \Nz^2, (i-1))) \\
+\displaystyle = O(\NSN\ \G\ \Nz \Nr + \G\ \Nz^2 \sum_{i=1}^{\NSN} (i-1))\\
+\displaystyle \simeq O(\NSN\ \G\ \Nr + \G\ \NSN^2)
+\end{array}
+\end{equation}
+
+%%%%%%%%%
+\section{Calcolo dell'output del readout globale}\label{app:costo:out_globale}
+Questo caso differisce dal calcolo dell'output delle sotto-reti unicamente perché l'input del readout globale è formato dai soli output-feedback, senza che vi sia alcun segnale proveniente da un reservoir. \\
+Il costo computazionale complessivo per il calcolo degli output della rete è quindi dato da
+\begin{equation}
+O(\G\ \NSN^2)
+\end{equation}
+e scala linearmente con la dimensione del dataset e quadraticamente con il numero di sotto-reti.
+
+
+%%%%%%%%%%
+\section{Model selection di GraphESN}\label{app:costo:modelselection}
+Assumiamo l'uso di una GraphESN con reservoir completamente connessi. Siamo interessati al costo complessivo di una model selection che preveda la variazione delle dimensioni del reservoir: $\Nr' \in \lbrace \Nr, 2\Nr, \dots, \NSN\, \Nr \rbrace$.
+
+Il costo del processo di encoding di una singola rete con reservoir di dimensioni $\Nr$ è in questo caso
+\begin{equation}
+O(\Nr^2\ \MAXIT\ \MAXV\ \G)
+\end{equation}
+Facendo variare la dimensione del reservoir, il costo complessivo diventa
+\begin{equation}
+\begin{array}{l}
+\displaystyle O(\Nr^2\ \MAXIT\ \MAXV\ \G \sum_{i=1}^{\NSN} i^2) \\
+\displaystyle \simeq O(\Nr^2\ \MAXIT\ \MAXV\ \G \NSN^3)
+\end{array}
+\end{equation}
+
+L'apprendimento, tramite Ridge Regression, ha invece per una singola rete costo complessivo di
+\begin{equation}
+O(\Nr^3 + \Nr^2\ \G)
+\end{equation}
+variando $\Nr' \in \lbrace \Nr, 2\Nr, \dots, \NSN\, \Nr \rbrace$ si ha dunque
+\begin{equation}
+\begin{array}{l}
+\displaystyle O(\Nr^3\ \sum_{i=1}^{\NSN} i^3 + \Nr^2\ \G\ \sum_{i=1}^{\NSN} i^2) \\
+\displaystyle \simeq O(\Nr^3\ \NSN^4 + \Nr^2\ \G\ \NSN^3) \\
+\end{array}
+\end{equation}
+
+Infine, il calcolo dell'output per ogni input del dataset costa
+\begin{equation}
+O(\Nr\ \G)
+\end{equation}
+che nel caso di una model selection completa diventa
+\begin{equation}
+\displaystyle O(\Nr\ \G \sum_{i=1}^{\NSN} i) \\
+\displaystyle \simeq O(\Nr\ \G \NSN^2) \\
+\end{equation}
+
+Il costo complessivo della selezione di un modello di tipo GraphESN, ottenuto variando la dimensione del reservoir $\Nr' \in \lbrace \Nr, 2\Nr, \dots, \NSN\, \Nr \rbrace$ è dunque:
+\begin{multline}
+O(\NSN^4\ \Nr^3 + \NSN^3\ \Nr^2\ \MAXIT\ \MAXV\ \G \\
++ \NSN^3\ \Nr^2\ \G + \NSN^2\ \Nr\ \G) 
+\end{multline}
+
+
+\begin{comment}
+
+--------------------------------------------------------------------------------
+
+*** Calcolo dell'output (readout globale) ***
+
+Differisce dal caso precedente solo perché ha in input unicamente gli 
+output-feedback, quindi nessun reservoir.
+
+    O(Ny^2 d^2 |G|)
+    ~ O(d^2 |G|)
+
+
+********************************************************************************
+********************************************************************************
+
+*** Confronto: Costruttivo VS Standard ***
+
+** GraphESN Costruttiva
+
+reservoir:          O(d |G| Nr^2 v j)
+sub learning:       O(d^4 + Nr d^3 + Nr^2 d^2 + Nr^3 d + d^3 |G| + d^2 Nr |G| + d Nr^2 |G|) 
+gloabl learning:    O(d^4 + d^3 |G|) 
+sub output:         O(d Nr |G| + d^2 |G|) 
+global output:      O(d^2 |G|) 
+
+** GraphESN Stadard
+
+[CLAUDIO]: specifica le assunzioni.
+ne stai facendo almeno due importanti:
+1. reservoir pienamente connessi
+2. dimensione del reservoir in GraphESN standard = Nr x j
+
+reservoir:          O(d |G| Nr^2 v j)
+learning:           O(Nr^3 + Nr^2 |G|)
+output:             O(|G| Nr)
+
+[CLAUDIO]: quindi da qui fai vedere quando e' conveniente GraphESN-FOF rispetto a GraphESN standard.
+\end{comment}
